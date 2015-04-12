@@ -52,15 +52,32 @@ public class BitmapFont2D : MonoBehaviour {
 		Vector3 screenPos = Camera.main.WorldToScreenPoint(this.transform.position);
 		int x = (int)screenPos.x;
 		int y = (int)(Screen.height - screenPos.y);
-		for (int i = 0; i<text.Length ; i++) 
+		int i = 0;
+		int n = text.Length;
+		while (i < n)
 		{
-			for (int j = 0;j<FontTextureArray.Length ;j++)
+			string compare = "";
+			if (text[i] == '$')
 			{
-				if (FontTextureArray[j].name == text[i].ToString())
+				if ((i == n-1) && (text [n-1] == '$') && (text [n-2] != '$'))
+				{
+					return; /*Security against overflow, and bad input*/
+				}
+				compare = text[i].ToString() + text[i + 1].ToString();
+				i += 2;
+			}else
+			{
+				compare = text[i].ToString();
+				i++;
+			}
+			for (int j = 0; j < FontTextureArray.Length ; j++)
+			{
+				if (FontTextureArray[j].name == compare)
 				{
 					Rect rect = new Rect (x,y,FontTextureArray[j].texture.width,FontTextureArray[j].texture.height);
 					GUI.DrawTexture(rect,FontTextureArray[j].texture);
 					x += FontTextureArray[j].texture.width;
+					break;
 				}
 			}
 		}
